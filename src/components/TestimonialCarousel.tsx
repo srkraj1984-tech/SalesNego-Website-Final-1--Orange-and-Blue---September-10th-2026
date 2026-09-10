@@ -257,25 +257,26 @@ export const TestimonialCarousel: React.FC = () => {
             className="relative outline-none focus-visible:ring-2 focus-visible:ring-[#FF6004] rounded-2xl"
             aria-live={isPlaying ? 'off' : 'polite'}
           >
-          <div className="relative min-h-[320px] sm:min-h-[280px] md:min-h-[250px] flex items-stretch">
-            <AnimatePresence mode="wait" custom={direction}>
+          {/* Contain: layout wrapped slider stage with locked height to prevent layout shifts on subsequent sections */}
+          <div className="[contain:layout] overflow-hidden rounded-2xl w-full relative h-[420px] xs:h-[380px] sm:h-[340px] md:h-[300px] lg:h-[290px] flex items-stretch">
+            <AnimatePresence mode="wait" custom={direction} initial={false}>
               <motion.div
                 key={current.id}
                 custom={direction}
                 initial={{ opacity: 0, x: direction > 0 ? 40 : -40 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: direction > 0 ? -40 : 40 }}
-                transition={{ duration: 0.32, ease: 'easeOut' }}
+                transition={{ duration: 0.32, ease: 'easeInOut' }}
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`Testimonial ${currentIndex + 1} of ${total}: from ${current.author}, ${current.role} at ${current.company}`}
-                className="w-full p-6 md:p-8 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#1f1d24] shadow-sm relative overflow-hidden flex flex-col justify-between"
+                className="w-full h-full p-5 sm:p-6 md:p-8 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-[#1f1d24] shadow-sm relative overflow-hidden flex flex-col justify-between"
               >
                 {/* Decorative Subtle Gradient Glow */}
                 <div className="absolute top-0 right-0 w-80 h-80 bg-[#FF6004]/5 dark:bg-[#FF6004]/10 rounded-full blur-[80px] pointer-events-none" />
 
                 {/* Top Badge Strip: Rating + Verified Tag + Domain + Key Metric */}
-                <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 sm:pb-5 border-b border-black/5 dark:border-white/10">
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-black/5 dark:border-white/10">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     {/* Star Rating */}
                     <div className="flex items-center gap-1 text-[#FE9E30]" aria-label="5 out of 5 stars">
@@ -298,25 +299,27 @@ export const TestimonialCarousel: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Highlight Metric Pill */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-[#FF6004]/10 dark:bg-[#FF6004]/15 border border-[#FF6004]/20 text-[#FF6004]">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-bold">{current.highlightMetric}</span>
-                    <span className="text-xs font-medium text-[#161519] dark:text-zinc-200">
+                  {/* Highlight Metric Pill / Box in Blue, White primary text & #FE9E30 subtext */}
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#103CE7] dark:bg-[#103CE7] border border-blue-400/30 shadow-xs shrink-0">
+                    <TrendingUp className="w-4 h-4 text-white shrink-0" />
+                    <span className="text-sm font-bold text-white tracking-wide">
+                      {current.highlightMetric}
+                    </span>
+                    <span className="text-xs font-semibold text-[#FE9E30]">
                       {current.highlightLabel}
                     </span>
                   </div>
                 </div>
 
-                {/* Quote - Tightened Margin */}
-                <div className="relative z-10">
-                  <blockquote className="my-4 text-lg md:text-xl font-medium leading-relaxed font-lexend text-[#161519] dark:text-white">
+                {/* Quote - Vertically Balanced */}
+                <div className="relative z-10 flex-1 flex items-center py-2 sm:py-3">
+                  <blockquote className="text-base sm:text-lg md:text-xl font-medium leading-relaxed font-lexend text-[#161519] dark:text-white">
                     &ldquo;{current.quote}&rdquo;
                   </blockquote>
                 </div>
 
                 {/* Bottom: Author Footer & Market Context */}
-                <div className="relative z-10 pt-4 sm:pt-5 border-t border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="relative z-10 pt-3 sm:pt-4 border-t border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     {/* Monogram Avatar */}
                     <div className="w-11 h-11 rounded-full bg-[#161519] dark:bg-white text-white dark:text-[#161519] font-lexend font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">

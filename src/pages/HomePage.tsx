@@ -58,6 +58,17 @@ export const HomePage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExperiencePaused, setIsExperiencePaused] = useState(false);
 
+  // "How We Are Different" expanding/contracting dynamic typing effect
+  const diffPhrases = [
+    'commercial execution.',
+    'senior deal ownership.',
+    'pipeline-to-revenue conversion.',
+    'end-to-end commercial momentum.',
+  ];
+  const [diffPhraseIndex, setDiffPhraseIndex] = useState(0);
+  const [diffDisplayedText, setDiffDisplayedText] = useState('');
+  const [diffIsDeleting, setDiffIsDeleting] = useState(false);
+
   // Quick inquiry form state
   const [inquiryName, setInquiryName] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
@@ -93,6 +104,35 @@ export const HomePage: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [displayedText, isDeleting, currentPhraseIndex]);
+
+  // "How We Are Different" typing effect loop
+  useEffect(() => {
+    const fullPhrase = diffPhrases[diffPhraseIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!diffIsDeleting) {
+      if (diffDisplayedText.length < fullPhrase.length) {
+        timer = setTimeout(() => {
+          setDiffDisplayedText(fullPhrase.slice(0, diffDisplayedText.length + 1));
+        }, 65);
+      } else {
+        timer = setTimeout(() => {
+          setDiffIsDeleting(true);
+        }, 2200);
+      }
+    } else {
+      if (diffDisplayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDiffDisplayedText(fullPhrase.slice(0, diffDisplayedText.length - 1));
+        }, 35);
+      } else {
+        setDiffIsDeleting(false);
+        setDiffPhraseIndex((prev) => (prev + 1) % diffPhrases.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [diffDisplayedText, diffIsDeleting, diffPhraseIndex]);
 
   const clientLogos = [
     {
@@ -418,7 +458,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* 5. Trust Line (Now firmly above the fold) */}
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-zinc-400 font-medium">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-zinc-300 font-medium">
                 Founder-led commercial execution across North America, UAE, Europe, India and Australia.
               </p>
             </div>
@@ -432,10 +472,10 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Hero Trust Metrics Bar with Staggered Scroll Entrance */}
+          {/* Bottom Hero Trust Metrics Bar with Staggered Scroll Entrance & Reduced Distance */}
           <StaggerGroup
             staggerDelay={0.08}
-            className="relative z-10 pt-5 mt-5 border-t border-black/10 dark:border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-6 items-start"
+            className="relative z-10 pt-3 mt-3 border-t border-black/10 dark:border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 items-start"
           >
             <StaggerItem distance={16}>
               <div>
@@ -720,12 +760,21 @@ export const HomePage: React.FC = () => {
             <h2 className="font-lexend text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] text-[#161519] dark:text-white">
               We Do Not Stop at Leads or Meetings.
             </h2>
-            <div className="mt-4 space-y-1.5 text-base text-[#555459] dark:text-zinc-300 leading-relaxed">
+            <div className="mt-4 space-y-2 text-base text-[#555459] dark:text-zinc-300 leading-relaxed">
               <p>Lead-generation providers book calls.</p>
               <p>Advisors offer frameworks.</p>
-              <p className="font-bold text-[#161519] dark:text-white">
-                SalesNego provides commercial execution.
-              </p>
+              
+              {/* Expanding and contracting animated pill in blue box #103CE7 */}
+              <div className="flex items-center flex-wrap gap-2.5 pt-1.5 pb-1">
+                <span className="font-bold text-[#161519] dark:text-white text-base sm:text-lg">
+                  SalesNego provides
+                </span>
+                <span className="inline-flex items-center rounded-[10px] bg-[#103CE7] px-3.5 py-1 text-white font-semibold text-sm sm:text-base tracking-wide shadow-sm min-h-[32px]">
+                  <span>{diffDisplayedText}</span>
+                  <span className="ml-1 inline-block w-[2px] h-[0.9em] bg-white align-middle animate-mf-caret" />
+                </span>
+              </div>
+
               <p className="pt-2">
                 We connect strategic thinking, operational discipline and senior commercial ownership across the customer journey.
               </p>
@@ -778,7 +827,7 @@ export const HomePage: React.FC = () => {
             <h2 className="font-lexend text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] text-[#161519] dark:text-white">
               One Connected Commercial Journey.
             </h2>
-            <p className="mt-3 text-base text-[#555459] dark:text-zinc-400 leading-relaxed">
+            <p className="mt-3 text-base text-[#103CE7] dark:text-[#3B82F6] font-medium leading-relaxed">
               An integrated pathway from first market signal to multi-year customer expansion.
             </p>
           </ScrollReveal>
@@ -885,10 +934,12 @@ export const HomePage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => navigate('/case-studies')}
-                      className="inline-flex items-center gap-2 rounded-full px-6 py-3 bg-[#161519] dark:bg-white text-white dark:text-[#161519] font-bold text-xs hover:bg-black transition-colors"
+                      className="inline-flex items-center gap-2 rounded-full px-6 py-3 bg-[#161519] dark:bg-white text-white dark:text-[#161519] font-bold text-xs hover:bg-black dark:hover:bg-black dark:hover:text-white dark:hover:border-white/40 border border-transparent transition-all group shadow-xs cursor-pointer"
                     >
-                      <span>View Client Case Studies</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span className="text-white dark:text-[#161519] group-hover:text-white dark:group-hover:text-white transition-colors">
+                        View Clientele &amp; Track Record
+                      </span>
+                      <ArrowRight className="w-3.5 h-3.5 text-white dark:text-[#161519] group-hover:text-white dark:group-hover:text-white transition-colors" />
                     </button>
 
                     <button
@@ -922,7 +973,7 @@ export const HomePage: React.FC = () => {
             <h2 className="font-lexend text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.12] text-[#161519] dark:text-white">
               Experience Across SaaS, AI and Technology Sales.
             </h2>
-            <p className="mt-3 text-base text-[#555459] dark:text-zinc-400 leading-relaxed">
+            <p className="mt-3 text-base text-[#103CE7] dark:text-[#3B82F6] font-medium leading-relaxed">
               Commercial engagements across sectors, markets and deal stages.
             </p>
           </ScrollReveal>
@@ -1119,7 +1170,7 @@ export const HomePage: React.FC = () => {
               onClick={() => navigate('/case-studies')}
               className="inline-flex items-center gap-2 rounded-full px-6 py-3 bg-[#161519] dark:bg-white text-white dark:text-[#161519] font-bold text-xs hover:bg-black transition-colors"
             >
-              <span>View Case Studies</span>
+              <span>View Clientele</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </ScrollReveal>
@@ -1145,8 +1196,8 @@ export const HomePage: React.FC = () => {
                 <h2 className="font-lexend text-3xl sm:text-4xl lg:text-5xl font-normal leading-[1.1] text-white">
                   Commercial Alignment Beyond Activity Metrics.
                 </h2>
-                <div className="mt-4 space-y-2 text-base text-zinc-300 leading-relaxed">
-                  <p>
+                <div className="mt-4 space-y-2 text-base leading-relaxed">
+                  <p className="text-[#103CE7] dark:text-[#3B82F6] font-semibold">
                     SalesNego works with a selective number of B2B technology companies at any given time.
                   </p>
                   <p className="font-medium text-white">
@@ -1163,7 +1214,7 @@ export const HomePage: React.FC = () => {
               >
                 <StaggerItem distance={20} className="h-full">
                   <div className="p-5 rounded-[18px] bg-white/5 border border-white/10 h-full">
-                    <span className="text-xs text-[#FE9E30] font-bold block mb-1">Model</span>
+                    <span className="text-xs text-[#103CE7] dark:text-[#3B82F6] font-bold block mb-1">Model</span>
                     <h4 className="font-bold text-sm text-white mb-2">Monthly Retainer + Commercial Performance</h4>
                     <p className="text-xs text-zinc-400">Aligned incentives focused on validated revenue.</p>
                   </div>
@@ -1171,7 +1222,7 @@ export const HomePage: React.FC = () => {
 
                 <StaggerItem distance={20} className="h-full">
                   <div className="p-5 rounded-[18px] bg-white/5 border border-white/10 h-full">
-                    <span className="text-xs text-[#FE9E30] font-bold block mb-1">Scope</span>
+                    <span className="text-xs text-[#103CE7] dark:text-[#3B82F6] font-bold block mb-1">Scope</span>
                     <h4 className="font-bold text-sm text-white mb-2">Strategy, RevOps, Execution or Full Commercial Pod</h4>
                     <p className="text-xs text-zinc-400">Tailored to your commercial gaps.</p>
                   </div>
@@ -1179,7 +1230,7 @@ export const HomePage: React.FC = () => {
 
                 <StaggerItem distance={20} className="h-full">
                   <div className="p-5 rounded-[18px] bg-white/5 border border-white/10 h-full">
-                    <span className="text-xs text-[#FE9E30] font-bold block mb-1">Markets</span>
+                    <span className="text-xs text-[#103CE7] dark:text-[#3B82F6] font-bold block mb-1">Markets</span>
                     <h4 className="font-bold text-sm text-white mb-2">North America, UAE, Europe, India, Australia</h4>
                     <p className="text-xs text-zinc-400">Cross-border market entry and expansion.</p>
                   </div>
@@ -1187,7 +1238,7 @@ export const HomePage: React.FC = () => {
 
                 <StaggerItem distance={20} className="h-full">
                   <div className="p-5 rounded-[18px] bg-white/5 border border-white/10 h-full">
-                    <span className="text-xs text-[#FE9E30] font-bold block mb-1">Focus</span>
+                    <span className="text-xs text-[#103CE7] dark:text-[#3B82F6] font-bold block mb-1">Focus</span>
                     <h4 className="font-bold text-sm text-white mb-2">Sustainable pipeline, customer acquisition and account expansion.</h4>
                     <p className="text-xs text-zinc-400">Durable commercial results.</p>
                   </div>

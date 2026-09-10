@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -8,23 +8,32 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void;
 }
 
+export const getInitialTheme = (): Theme => {
+  try {
+    if (typeof window !== 'undefined' && 'localStorage' in window) {
+      // 1. Check localStorage for user override
+      const savedTheme = (localStorage.getItem('theme') || localStorage.getItem('salesnego_theme')) as Theme | null;
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        return savedTheme;
+      }
+
+      // 2. Check System/OS Preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    }
+  } catch {
+    // Storage access or matchMedia may be restricted in sandboxed environments
+  }
+
+  // 3. Fallback default
+  return 'light';
+};
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Dark Mode is default per approved specification
-  const [theme, setThemeState] = useState<Theme>(() => {
-    try {
-      if (typeof window !== 'undefined' && 'localStorage' in window) {
-        const savedTheme = window.localStorage.getItem('salesnego_theme') as Theme | null;
-        if (savedTheme === 'dark' || savedTheme === 'light') {
-          return savedTheme;
-        }
-      }
-    } catch {
-      // Storage access may be blocked in sandboxed iframes
-    }
-    return 'dark';
-  });
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -37,6 +46,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     try {
       if (typeof window !== 'undefined' && 'localStorage' in window) {
+        window.localStorage.setItem('theme', theme);
         window.localStorage.setItem('salesnego_theme', theme);
       }
     } catch {
@@ -66,3 +76,4 @@ export const useTheme = (): ThemeContextType => {
   }
   return context;
 };
+

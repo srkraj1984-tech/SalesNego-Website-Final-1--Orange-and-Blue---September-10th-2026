@@ -16,16 +16,73 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- JSON-LD FAQPage Schema Markup for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How does SalesNego differ from traditional lead gen agencies?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Traditional lead generation agencies focus purely on top-of-funnel activity—blasting generic email sequences to hit vanity meeting quotas, leaving your team with unqualified calls and wasted time. SalesNego is a senior commercial execution partner. We bridge prospect engagement, rigorous discovery, multi-stakeholder navigation, proposal building, and negotiation through to closed revenue."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does your commercial pricing model align with closed revenue?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We believe in authentic skin in the game. Rather than charging rigid, inflated consulting fees or per-lead markups that incentivize low-quality meetings, our partnerships combine a predictable monthly execution retainer with a performance component linked to closed revenue. We share the commercial upside when your pipeline successfully converts into cash."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who actually handles our commercial calls and deal execution?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You are never outsourced to junior script-readers or offshore call centers. Every outbound touch, discovery call, and commercial meeting is led by seasoned B2B enterprise sales practitioners who understand complex software architectures, executive buying committees, and procurement realities. Your brand is represented with executive-level domain credibility from day one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why connect GTM Strategy, RevOps, and Sales Execution in one loop?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most growing companies suffer from fragmented silos: an abstract strategy deck that sits unread in Google Drive, a chaotic CRM full of dirty data, and ad-hoc outbound prospecting. By unifying Strategy, AI-accelerated RevOps, and Deal Execution into a single commercial loop, live learnings from customer calls continuously refine market positioning, pipeline qualification, and automated workflows."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What types of companies achieve the highest ROI with SalesNego?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We deliver the strongest impact for B2B technology providers, high-ACV software companies, and founder-led businesses ($500K to $10M+ ARR) ready to graduate from ad-hoc founder selling to an institutional commercial engine. We bypass the 6–9 month lag, recruitment risk, and heavy overhead of building an entire internal commercial department from scratch."
+          }
+        }
+      ]
+    }
+    </script>
+
     <script>
       (function() {
         try {
-          if (typeof window !== 'undefined' && 'localStorage' in window) {
-            var saved = window.localStorage.getItem('salesnego_theme');
-            if (saved === 'light') {
-              document.documentElement.classList.remove('dark');
-            } else {
-              document.documentElement.classList.add('dark');
-            }
+          var saved = localStorage.getItem('theme') || localStorage.getItem('salesnego_theme');
+          var isDark = false;
+          if (saved === 'dark' || saved === 'light') {
+            isDark = saved === 'dark';
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            isDark = true;
+          }
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
           }
         } catch (e) {}
       })();

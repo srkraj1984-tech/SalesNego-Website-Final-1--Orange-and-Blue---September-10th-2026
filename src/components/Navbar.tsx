@@ -16,6 +16,8 @@ export const Navbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isManualScrollingRef = useRef<boolean>(false);
+  const manualScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Prevent background scroll when mobile drawer is open
   useEffect(() => {
@@ -28,6 +30,22 @@ export const Navbar: React.FC = () => {
       document.body.style.overflow = '';
     };
   }, [mobileMenuOpen]);
+
+  // Clean up manual scroll timer on unmount
+  useEffect(() => {
+    return () => {
+      if (manualScrollTimerRef.current) clearTimeout(manualScrollTimerRef.current);
+    };
+  }, []);
+
+  // Handle scrollend event to release manual scroll lock
+  useEffect(() => {
+    const handleScrollEnd = () => {
+      isManualScrollingRef.current = false;
+    };
+    window.addEventListener('scrollend', handleScrollEnd);
+    return () => window.removeEventListener('scrollend', handleScrollEnd);
+  }, []);
 
   // Handle Escape key to close mobile drawer, dropdown, and active tooltips
   useEffect(() => {
@@ -63,11 +81,14 @@ export const Navbar: React.FC = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
+      // If user recently clicked a nav item, do not overwrite activeSection during programmatic scroll
+      if (isManualScrollingRef.current) return;
+
       // On homepage, detect active section for smooth scrolling indicator
       if (currentPath === '/') {
         const sections = [
           { id: 'contact-section', name: 'contact' },
-          { id: 'experience-section', name: 'case-studies' },
+          { id: 'experience-section', name: 'clientele' },
           { id: 'about-section', name: 'about' },
           { id: 'services-section', name: 'services' },
           { id: 'hero-section', name: 'home' },
@@ -98,13 +119,6 @@ export const Navbar: React.FC = () => {
       tooltip: 'Homepage & commercial overview',
     },
     {
-      label: 'About Us',
-      path: '/about',
-      sectionId: 'about-section',
-      sectionKey: 'about',
-      tooltip: 'Founder leadership & mission',
-    },
-    {
       label: 'Services',
       path: '/services',
       sectionId: 'services-section',
@@ -112,10 +126,17 @@ export const Navbar: React.FC = () => {
       tooltip: 'GTM Strategy, RevOps & Execution',
     },
     {
-      label: 'Case Studies',
+      label: 'About Us',
+      path: '/about',
+      sectionId: 'about-section',
+      sectionKey: 'about',
+      tooltip: 'Founder leadership & mission',
+    },
+    {
+      label: 'Clientele',
       path: '/case-studies',
       sectionId: 'experience-section',
-      sectionKey: 'case-studies',
+      sectionKey: 'clientele',
       tooltip: 'Client track record & deals',
     },
     {
@@ -152,12 +173,19 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
     setServicesDropdownOpen(false);
 
+    // Immediately set activeSection to clicked target and lock programmatic scroll override
+    setActiveSection(item.sectionKey);
+    isManualScrollingRef.current = true;
+    if (manualScrollTimerRef.current) clearTimeout(manualScrollTimerRef.current);
+    manualScrollTimerRef.current = setTimeout(() => {
+      isManualScrollingRef.current = false;
+    }, 1000);
+
     if (item.sectionKey === 'contact') {
       if (currentPath === '/') {
         const element = document.getElementById('contact-section');
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setActiveSection('contact');
           return;
         }
       }
@@ -170,7 +198,6 @@ export const Navbar: React.FC = () => {
         const element = document.getElementById(item.sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setActiveSection(item.sectionKey);
           return;
         }
       }
@@ -200,13 +227,13 @@ export const Navbar: React.FC = () => {
       <div className="nav-header-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[4rem] sm:h-20 flex flex-wrap md:flex-nowrap items-center justify-between gap-2 sm:gap-4">
         {/* Left: Official Brand Logo */}
         <div className="shrink-0 flex items-center max-w-[55%] sm:max-w-none">
-          <SalesNegoLogo imgClassName="h-8 sm:h-10 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-[240px]" />
+          <SalesNegoLogo imgClassName="h-9 sm:h-11 md:h-13 w-auto max-w-[180px] sm:max-w-[220px] md:max-w-[260px]" />
         </div>
 
         {/* Desktop Navigation Pill Bar (Metafic style: rounded-full pills) */}
         <nav
           aria-label="Primary Navigation"
-          className="hidden md:flex items-center gap-1.5 p-1.5 rounded-full bg-white/80 dark:bg-[#1C1B20]/80 border border-[#E5E3DC] dark:border-white/10 backdrop-blur-md shadow-2xs"
+          className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/80 dark:bg-[#1C1B20]/80 border border-[#E5E3DC] dark:border-white/10 backdrop-blur-md shadow-2xs"
         >
           {navItems.map((item) => {
             const active = isItemActive(item);
@@ -238,7 +265,7 @@ export const Navbar: React.FC = () => {
                     aria-expanded={servicesDropdownOpen}
                     aria-haspopup="true"
                     aria-describedby={isTooltipVisible ? tooltipId : undefined}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6004] ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] sm:text-[13.5px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6004] ${
                       active
                         ? 'bg-[#FF6004] text-white shadow-xs'
                         : 'text-[#161519] dark:text-zinc-200 hover:text-[#FF6004] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
@@ -368,7 +395,7 @@ export const Navbar: React.FC = () => {
                   onMouseEnter={() => setActiveTooltipId(tooltipId)}
                   onMouseLeave={() => setActiveTooltipId((prev) => (prev === tooltipId ? null : prev))}
                   aria-describedby={isTooltipVisible ? tooltipId : undefined}
-                  className={`inline-flex items-center gap-1 rounded-full px-4 py-2 text-[14px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6004] ${
+                  className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] sm:text-[13.5px] font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6004] ${
                     active
                       ? 'bg-[#FF6004] text-white shadow-xs'
                       : 'text-[#161519] dark:text-zinc-200 hover:text-[#FF6004] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'

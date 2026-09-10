@@ -208,22 +208,16 @@ html.dark body {
   object-fit: contain;
 }
 
-/* High-clarity vector/grayscale inversion for client logos in dark mode */
-.dark .client-logo-vector {
+/* High-clarity raster logo inversion for dark monochrome images in dark mode */
+.dark .client-logo-raster-invert {
   filter: brightness(0) invert(1) !important;
   opacity: 0.85 !important;
   transition: opacity 300ms ease, transform 300ms ease;
 }
 
-.dark .client-logo-vector:hover,
-.dark .group:hover .client-logo-vector {
+.dark .client-logo-raster-invert:hover,
+.dark .group:hover .client-logo-raster-invert {
   opacity: 1 !important;
-}
-
-/* Invert dark logos/text to white in dark mode */
-.dark img[alt*="Aarav Nexus"],
-.dark .logo-aarav-nexus {
-  filter: brightness(0) invert(1) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
